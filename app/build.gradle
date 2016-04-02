@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "24.0.0 rc1"
+    buildToolsVersion "24.0.0 rc2"
 
     defaultConfig {
         applicationId "com.example.edge"
@@ -31,15 +31,21 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.github.grandstaish.paperparcel:paperparcel-kotlin:1.0.0-beta8'
     kapt 'com.github.grandstaish.paperparcel:compiler:1.0.0-beta8'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
+    compile "com.android.support:appcompat-v7:$support_version"
+    compile "com.android.support:design:$support_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.squareup.flow:flow:1.0.0-alpha'
+    compile 'com.google.dagger:dagger:2.0.2'
+    compile 'javax.annotation:jsr250-api:1.0'
+    kapt 'com.google.dagger:dagger-compiler:2.0.2'
 
     testCompile 'junit:junit:4.12'
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 buildscript {
     ext.kotlin_version = '1.0.1-1'
+    ext.support_version = '23.2.1'
+
     repositories {
         mavenCentral()
     }

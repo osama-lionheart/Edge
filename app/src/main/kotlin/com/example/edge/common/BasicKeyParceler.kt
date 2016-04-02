@@ -1,4 +1,4 @@
-package com.example.edge
+package com.example.edge.common
 
 import android.os.Parcelable
 
@@ -6,10 +6,6 @@ import flow.KeyParceler
 
 /**
  * Assumes states are [Parcelable].
- *
- *
- * A more realistic implementation might rely on a library like auto-value-parcel,
- * auto-parcel, or parceler.
  */
 internal class BasicKeyParceler : KeyParceler {
     override fun toParcelable(key: Any): Parcelable {
