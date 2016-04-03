@@ -5,7 +5,6 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
@@ -22,16 +21,29 @@ import javax.inject.Inject
 class DrawerPresenter @Inject constructor(
         private val activityOwner: ActivityOwner) : Presenter<View>, HandlesBack {
     private var view: DrawerLayout? = null
+    private var drawerToggle: ActionBarDrawerToggle? = null
 
     override fun attach(view: View) {
         this.view = view as DrawerLayout
 
         val navigationView = view.findViewById(R.id.nav_view) as NavigationView
         navigationView.setNavigationItemSelectedListener(onNavigationItemSelected)
+
+        activityOwner.onOptionsItemsSelectedListener = {
+            if (drawerToggle?.onOptionsItemSelected(it) ?: false) {
+                true
+            } else if (it.itemId == android.R.id.home) {
+                activityOwner.activity?.onBackPressed()
+                true
+            }
+
+            false
+        }
     }
 
     override fun detach(view: View) {
         this.view = null
+        activityOwner.onOptionsItemsSelectedListener = null
     }
 
     val onNavigationItemSelected: (MenuItem) -> Boolean = {
@@ -47,29 +59,22 @@ class DrawerPresenter @Inject constructor(
 
     fun setToolbar(toolbar: Toolbar, hasHome: Boolean, hasUp: Boolean) {
         activityOwner.activity?.setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            if (view!!.isDrawerOpen(Gravity.START)) {
-                view!!.closeDrawer(Gravity.START)
-            } else {
-                view!!.openDrawer(Gravity.START)
-            }
-        }
 
-        val drawerToggle = ActionBarDrawerToggle(
+        drawerToggle = ActionBarDrawerToggle(
                 activityOwner.activity, view!!, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
 
-        view!!.addDrawerListener(drawerToggle)
-        drawerToggle.syncState()
+        view!!.addDrawerListener(drawerToggle!!)
+        drawerToggle?.syncState()
 
         if (hasUp) {
-            drawerToggle.isDrawerIndicatorEnabled = false
+            drawerToggle?.isDrawerIndicatorEnabled = false
             activityOwner.activity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         } else if (hasHome) {
             activityOwner.activity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            drawerToggle.isDrawerIndicatorEnabled = true
+            drawerToggle?.isDrawerIndicatorEnabled = true
         }
 
-        drawerToggle.syncState()
+        drawerToggle?.syncState()
     }
 
     override fun onBackPressed(): Boolean {

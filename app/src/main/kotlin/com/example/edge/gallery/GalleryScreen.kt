@@ -15,6 +15,6 @@ import nz.bradcampbell.paperparcel.PaperParcel
 @WithComponent(GalleryComponent::class)
 class GalleryScreen() : HasContainerKey(DrawerScreen()), HasPresenter<GalleryPresenter> {
     override fun getPresenter(context: Context): GalleryPresenter {
-        return context.getComponent<GalleryComponent>()!!.getPresenter()
+        return context.getComponent(GalleryComponent::class)!!.getGalleryPresenter()
     }
 }

@@ -6,6 +6,6 @@ import dagger.Component
 
 @ScopeSingleton(GalleryComponent::class)
 @Component(dependencies = arrayOf(DrawerComponent::class))
-interface GalleryComponent {
-    fun getPresenter(): GalleryPresenter
+interface GalleryComponent : DrawerComponent {
+    fun getGalleryPresenter(): GalleryPresenter
 }

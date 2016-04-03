@@ -5,6 +5,10 @@ android {
     compileSdkVersion 23
     buildToolsVersion "24.0.0 rc2"
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.example.edge"
         minSdkVersion 16
@@ -38,6 +42,7 @@ dependencies {
     compile 'com.google.dagger:dagger:2.0.2'
     compile 'javax.annotation:jsr250-api:1.0'
     kapt 'com.google.dagger:dagger-compiler:2.0.2'
+    kapt 'com.android.databinding:compiler:2.1.0-alpha4'
 
     testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"

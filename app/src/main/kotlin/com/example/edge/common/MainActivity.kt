@@ -4,6 +4,7 @@ import android.R
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import android.view.ViewGroup
 import com.example.edge.gallery.GalleryScreen
 import flow.Flow
@@ -50,6 +51,14 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
 
         activityOwner.detach(this)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (activityOwner.onOptionsItemSelected(item!!)) {
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onBackPressed() {

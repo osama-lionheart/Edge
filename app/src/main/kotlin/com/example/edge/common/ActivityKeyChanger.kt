@@ -2,6 +2,8 @@ package com.example.edge.common
 
 import android.app.Activity
 import android.content.Context
+import android.databinding.DataBindingUtil
+import android.databinding.ViewDataBinding
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,6 +57,7 @@ internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger()
 
             view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
                 override fun onViewAttachedToWindow(view: View) {
+                    setupDataBinding(view)
                     presenter.attach(view)
                 }
 
@@ -62,8 +65,15 @@ internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger()
                     presenter.detach(view);
                 }
             })
+        } else {
+            setupDataBinding(view)
         }
 
         return view
+    }
+
+    fun setupDataBinding(view: View) {
+        val binding = DataBindingUtil.bind<ViewDataBinding>(view)
+        binding.executePendingBindings()
     }
 }

@@ -4,8 +4,6 @@ import dagger.Component
 
 @ScopeSingleton(MainActivityComponent::class)
 @Component
-interface MainActivityComponent {
+interface MainActivityComponent : ActivityOwnerComponent {
     fun inject(activity: MainActivity)
-
-    fun getActivityOwner(): ActivityOwner
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import flow.Flow
 import flow.Services
 import flow.ServicesFactory
+import kotlin.reflect.KClass
 
 class DaggerService(private val component: Any) : ServicesFactory() {
     private val cachedServices: MutableMap<Any, Any> = mutableMapOf()
@@ -11,8 +12,14 @@ class DaggerService(private val component: Any) : ServicesFactory() {
     companion object {
         const val SERVICE_NAME = "DAGGER_SERVICE"
 
-        fun <T> Context.getComponent(): T? {
-            return Flow.getService<T>(SERVICE_NAME, this)
+        fun <T : Any> Context.getComponent(klass: KClass<T>): T? {
+            val component = Flow.getService<T>(SERVICE_NAME, this)
+
+            if (component == null || !klass.java.isAssignableFrom(component.javaClass)) {
+                return null
+            }
+
+            return component
         }
     }
 
