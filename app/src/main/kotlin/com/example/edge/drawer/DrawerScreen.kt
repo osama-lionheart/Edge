@@ -15,6 +15,6 @@ import nz.bradcampbell.paperparcel.PaperParcelable
 @Layout(R.layout.drawer_container)
 class DrawerScreen : ClassKey(), PaperParcelable, HasPresenter<DrawerPresenter> {
     override fun getPresenter(context: Context): DrawerPresenter {
-        return context.getComponent<DrawerComponent>().getPresenter()
+        return context.getComponent<DrawerComponent>()!!.getPresenter()
     }
 }

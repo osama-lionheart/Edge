@@ -15,6 +15,6 @@ import nz.bradcampbell.paperparcel.PaperParcelable
 @Layout(R.layout.slideshow_screen)
 class SlideshowScreen : ClassKey(), PaperParcelable, HasPresenter<SlideshowPresenter> {
     override fun getPresenter(context: Context): SlideshowPresenter {
-        return context.getComponent<SlideshowComponent>().getPresenter()
+        return context.getComponent<SlideshowComponent>()!!.getPresenter()
     }
 }

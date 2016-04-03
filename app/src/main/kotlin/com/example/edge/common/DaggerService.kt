@@ -11,8 +11,8 @@ class DaggerService(private val component: Any) : ServicesFactory() {
     companion object {
         const val SERVICE_NAME = "DAGGER_SERVICE"
 
-        fun <T> Context.getComponent(): T {
-            return Flow.getService<T>(SERVICE_NAME, this)!!
+        fun <T> Context.getComponent(): T? {
+            return Flow.getService<T>(SERVICE_NAME, this)
         }
     }
 
