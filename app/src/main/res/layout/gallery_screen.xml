@@ -4,6 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/apk/res-auto">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.edge.gallery.GalleryViewModel"/>
+    </data>
+
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,7 +22,6 @@
             android:theme="@style/AppTheme.AppBarOverlay">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
@@ -26,12 +32,9 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="Gallery Screen"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        <include
+            layout="@layout/gallery_content"
+            bind:viewModel="@{viewModel}"/>
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

@@ -7,11 +7,15 @@ import android.databinding.ViewDataBinding
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.edge.BR
 import com.example.edge.R
+import com.example.edge.common.DaggerService.Companion.getComponent
 import flow.Direction
 import flow.KeyChanger
 import flow.State
 import flow.TraversalCallback
+import kotlin.reflect.declaredMemberFunctions
+import kotlin.reflect.jvm.javaMethod
 
 internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger() {
     override fun changeKey(outgoingState: State?, incomingState: State?, direction: Direction?,
@@ -51,13 +55,14 @@ internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger()
     fun inflateViewForKey(key: Any, context: Context): View {
         val layout = key.javaClass.getAnnotation(Layout::class.java).value
         val view = LayoutInflater.from(context).inflate(layout, null)
+        val viewModel = getViewModelFromKey(key, context)
 
         if (key is HasPresenter<*>) {
             val presenter = key.getPresenter(context)
 
             view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
                 override fun onViewAttachedToWindow(view: View) {
-                    setupDataBinding(view)
+                    setupDataBinding(view, viewModel)
                     presenter.attach(view)
                 }
 
@@ -66,14 +71,42 @@ internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger()
                 }
             })
         } else {
-            setupDataBinding(view)
+            setupDataBinding(view, viewModel)
         }
 
         return view
     }
 
-    fun setupDataBinding(view: View) {
+    fun getViewModelFromKey(key: Any, context: Context): Any? {
+        val componentClass = key.javaClass.getAnnotation(WithComponent::class.java)?.value
+        val viewModelClass = key.javaClass.getAnnotation(WithViewModel::class.java)?.value
+
+        if (componentClass == null || viewModelClass == null) {
+            return null
+        }
+
+        val component = context.getComponent(componentClass)
+
+        for (method in componentClass.declaredMemberFunctions) {
+            val className = method.returnType.toString().removePrefix("class ")
+            val returnClass = Class.forName(className).kotlin
+
+            if (returnClass.equals(viewModelClass)) {
+                return method.javaMethod?.invoke(component)!!
+            }
+        }
+
+        throw IllegalStateException("Couldn't find ViewModel ${viewModelClass.simpleName} " +
+                "for ${key.javaClass.simpleName} inside ${componentClass.simpleName}")
+    }
+
+    fun setupDataBinding(view: View, viewModel: Any?) {
         val binding = DataBindingUtil.bind<ViewDataBinding>(view)
+
+        if (viewModel != null) {
+            binding.setVariable(BR.viewModel, viewModel)
+        }
+
         binding.executePendingBindings()
     }
 }

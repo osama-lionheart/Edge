@@ -8,4 +8,5 @@ import dagger.Component
 @Component(dependencies = arrayOf(DrawerComponent::class))
 interface GalleryComponent : DrawerComponent {
     fun getGalleryPresenter(): GalleryPresenter
+    fun getGalleryViewModel(): GalleryViewModel
 }
