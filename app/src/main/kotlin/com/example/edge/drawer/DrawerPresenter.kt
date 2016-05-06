@@ -1,5 +1,6 @@
 package com.example.edge.drawer
 
+import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -9,23 +10,24 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import com.example.edge.R
-import com.example.edge.common.*
+import com.example.edge.common.ActivityOwner
+import com.example.edge.common.HandlesBack
+import com.example.edge.common.HasPresenter
+import com.example.edge.common.ScopeSingleton
 import com.example.edge.gallery.GalleryScreen
 import com.example.edge.slideshow.SlideshowScreen
 import flow.Direction
 import flow.Flow
 import flow.History
+import mortar.ViewPresenter
 import javax.inject.Inject
 
 @ScopeSingleton(DrawerComponent::class)
 class DrawerPresenter @Inject constructor(
-        private val activityOwner: ActivityOwner) : Presenter<View>, HandlesBack {
-    private var view: DrawerLayout? = null
+        private val activityOwner: ActivityOwner) : ViewPresenter<View>(), HandlesBack {
     private var drawerToggle: ActionBarDrawerToggle? = null
 
-    override fun attach(view: View) {
-        this.view = view as DrawerLayout
-
+    override fun onLoad(savedInstanceState: Bundle?) {
         val navigationView = view.findViewById(R.id.nav_view) as NavigationView
         navigationView.setNavigationItemSelectedListener(onNavigationItemSelected)
 
@@ -33,7 +35,7 @@ class DrawerPresenter @Inject constructor(
             if (drawerToggle?.onOptionsItemSelected(it) ?: false) {
                 true
             } else if (it.itemId == android.R.id.home) {
-                activityOwner.activity?.onBackPressed()
+                activityOwner.getActivity()?.onBackPressed()
                 true
             }
 
@@ -41,13 +43,8 @@ class DrawerPresenter @Inject constructor(
         }
     }
 
-    override fun detach(view: View) {
-        this.view = null
-        activityOwner.onOptionsItemsSelectedListener = null
-    }
-
     val onNavigationItemSelected: (MenuItem) -> Boolean = {
-        view?.closeDrawer(GravityCompat.START)
+        (view as DrawerLayout).closeDrawer(GravityCompat.START)
 
         when (it.itemId) {
             R.id.nav_gallery -> Flow.get(view).setHistory(History.single(GalleryScreen()), Direction.REPLACE)
@@ -58,19 +55,19 @@ class DrawerPresenter @Inject constructor(
     }
 
     fun setToolbar(toolbar: Toolbar, hasHome: Boolean, hasUp: Boolean) {
-        activityOwner.activity?.setSupportActionBar(toolbar)
+        activityOwner.getActivity()?.setSupportActionBar(toolbar)
 
         drawerToggle = ActionBarDrawerToggle(
-                activityOwner.activity, view!!, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+                activityOwner.getActivity(), (view as DrawerLayout), R.string.navigation_drawer_open, R.string.navigation_drawer_close)
 
-        view!!.addDrawerListener(drawerToggle!!)
+        (view as DrawerLayout).addDrawerListener(drawerToggle!!)
         drawerToggle?.syncState()
 
         if (hasUp) {
             drawerToggle?.isDrawerIndicatorEnabled = false
-            activityOwner.activity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            activityOwner.getActivity()?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         } else if (hasHome) {
-            activityOwner.activity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            activityOwner.getActivity()?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
             drawerToggle?.isDrawerIndicatorEnabled = true
         }
 
@@ -78,8 +75,8 @@ class DrawerPresenter @Inject constructor(
     }
 
     override fun onBackPressed(): Boolean {
-        if (view?.isDrawerOpen(GravityCompat.START) ?: false) {
-            view?.closeDrawer(GravityCompat.START)
+        if ((view as DrawerLayout).isDrawerOpen(GravityCompat.START)) {
+            (view as DrawerLayout).closeDrawer(GravityCompat.START)
             return true
         } else {
             val content = (view?.findViewById(R.id.containerView) as FrameLayout).getChildAt(0)

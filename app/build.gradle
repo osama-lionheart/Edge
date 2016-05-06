@@ -35,6 +35,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.github.grandstaish.paperparcel:paperparcel:1.0.0-beta8'
     compile 'com.github.grandstaish.paperparcel:paperparcel-kotlin:1.0.0-beta8'
+    compile 'com.squareup.mortar:mortar:0.20'
     kapt 'com.github.grandstaish.paperparcel:compiler:1.0.0-beta8'
     compile "com.android.support:appcompat-v7:$support_version"
     compile "com.android.support:design:$support_version"

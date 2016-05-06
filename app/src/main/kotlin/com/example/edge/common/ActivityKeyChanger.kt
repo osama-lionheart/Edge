@@ -63,11 +63,11 @@ internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger()
             view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
                 override fun onViewAttachedToWindow(view: View) {
                     setupDataBinding(view, viewModel)
-                    presenter.attach(view)
+                    presenter.takeView(view)
                 }
 
                 override fun onViewDetachedFromWindow(view: View) {
-                    presenter.detach(view);
+                    presenter.dropView(view)
                 }
             })
         } else {
