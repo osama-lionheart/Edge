@@ -19,6 +19,7 @@ import com.example.edge.slideshow.SlideshowScreen
 import flow.Direction
 import flow.Flow
 import flow.History
+import mortar.MortarScope
 import mortar.ViewPresenter
 import javax.inject.Inject
 
@@ -26,6 +27,14 @@ import javax.inject.Inject
 class DrawerPresenter @Inject constructor(
         private val activityOwner: ActivityOwner) : ViewPresenter<View>(), HandlesBack {
     private var drawerToggle: ActionBarDrawerToggle? = null
+
+    public override fun onEnterScope(scope: MortarScope) {
+        super.onEnterScope(scope)
+    }
+
+    public override fun onExitScope() {
+        super.onExitScope()
+    }
 
     override fun onLoad(savedInstanceState: Bundle?) {
         val navigationView = view.findViewById(R.id.nav_view) as NavigationView

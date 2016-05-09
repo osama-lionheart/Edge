@@ -13,10 +13,6 @@ class MainApplication : Application() {
             return scope.getService(name)
         }
 
-        if (DaggerService.SERVICE_NAME.equals(name)) {
-            return services;
-        }
-
         return super.getSystemService(name)
     }
 

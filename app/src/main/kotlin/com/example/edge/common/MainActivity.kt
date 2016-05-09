@@ -16,14 +16,13 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject lateinit var activityOwner: ActivityOwner
     lateinit var component: MainActivityComponent
-    private var scope: MortarScope? = null
 
     override fun attachBaseContext(newBase: Context?) {
         component = getComponent(newBase!!.applicationContext)
-        scope = getScope(newBase!!.applicationContext)
 
         val baseContext = Flow.configure(newBase, this)
                 .addServicesFactory(DaggerService(component))
+                //.addServicesFactory(MortarService(MortarScope.getScope(newBase!!.applicationContext)))
                 .dispatcher(KeyDispatcher.configure(this, ActivityKeyChanger(this)).build())
                 .defaultKey(GalleryScreen())
                 .keyParceler(BasicKeyParceler())
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        BundleServiceRunner.getBundleServiceRunner(this).onCreate(savedInstanceState)
+        //BundleServiceRunner.getBundleServiceRunner(this).onCreate(savedInstanceState)
 
         component.inject(this)
 
@@ -58,10 +57,10 @@ class MainActivity : AppCompatActivity() {
 
         activityOwner.dropView(this)
 
-        if (isFinishing) {
+        /*if (isFinishing) {
             val activityScope = MortarScope.findChild(applicationContext, getScopeName())
             activityScope?.destroy()
-        }
+        }*/
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -85,8 +84,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun getSystemService(name: String): Any {
-        if (scope!!.hasService(name)) {
-            return (scope as MortarScope).getService<Any>(name)
+        var activityScope = getScope(applicationContext)
+
+        if (activityScope.hasService(name)) {
+            return activityScope.getService<Any>(name)
         }
 
         return super.getSystemService(name)
@@ -112,6 +113,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        BundleServiceRunner.getBundleServiceRunner(this).onSaveInstanceState(outState)
+        //BundleServiceRunner.getBundleServiceRunner(this).onSaveInstanceState(outState)
     }
 }
