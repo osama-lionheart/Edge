@@ -86,8 +86,8 @@ class MainActivity : AppCompatActivity() {
     override fun getSystemService(name: String): Any {
         var activityScope = getScope(applicationContext)
 
-        if (activityScope.hasService(name)) {
-            return activityScope.getService<Any>(name)
+        if (MortarScope.getScope(applicationContext).hasService(name)) {
+            return MortarScope.getScope(applicationContext).getService<Any>(name)
         }
 
         return super.getSystemService(name)

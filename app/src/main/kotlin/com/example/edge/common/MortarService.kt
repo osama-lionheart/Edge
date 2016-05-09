@@ -9,17 +9,24 @@ import mortar.MortarScope
 class MortarService(private val rootScope: MortarScope) : ServicesFactory() {
     override fun bindServices(services: Services.Binder) {
         val key = services.getKey<Any>()
-        var childScope = rootScope.findChild(key.javaClass.simpleName)
-        if (childScope == null) {
-            childScope = rootScope.buildChild()
-                    .build(key.javaClass.simpleName)
+        if (key !is WithScope) {
+            return
         }
+
+        val scopeName = key.javaClass.name
+        val parentScope = services.getService<MortarScope>(SERVICE_NAME) ?: rootScope
+        val childScope = parentScope.findChild(scopeName) ?: key.createScope(parentScope).build(scopeName)
+
         services.bind(SERVICE_NAME, childScope)
     }
 
     override fun tearDownServices(services: Services) {
         services.getService<MortarScope>(SERVICE_NAME)?.destroy()
         super.tearDownServices(services)
+    }
+
+    interface WithScope {
+        fun createScope(parentScope: MortarScope): MortarScope.Builder
     }
 
     companion object {
