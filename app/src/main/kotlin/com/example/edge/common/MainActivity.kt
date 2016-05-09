@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         val baseContext = Flow.configure(newBase, this)
                 .addServicesFactory(DaggerService(component))
-                //.addServicesFactory(MortarService(MortarScope.getScope(newBase!!.applicationContext)))
+                .addServicesFactory(MortarService(MortarScope.getScope(newBase!!.applicationContext)))
                 .dispatcher(KeyDispatcher.configure(this, ActivityKeyChanger(this)).build())
                 .defaultKey(GalleryScreen())
                 .keyParceler(BasicKeyParceler())
