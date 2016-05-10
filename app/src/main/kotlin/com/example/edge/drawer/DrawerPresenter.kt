@@ -50,8 +50,8 @@ class DrawerPresenter @Inject constructor(
         view?.closeDrawer(GravityCompat.START)
 
         when (it.itemId) {
-            R.id.nav_gallery -> Flow.get(view).setHistory(History.single(GalleryScreen()), Direction.REPLACE)
-            R.id.nav_slideshow -> Flow.get(view).set(SlideshowScreen())
+            R.id.nav_gallery -> Flow.get(view as View).setHistory(History.single(GalleryScreen()), Direction.REPLACE)
+            R.id.nav_slideshow -> Flow.get(view as View).set(SlideshowScreen())
         }
 
         true

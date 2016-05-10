@@ -1,6 +1,7 @@
 package com.example.edge.common
 
 import android.content.Context
+import android.util.Log
 import flow.Flow
 import flow.Services
 import flow.ServicesFactory
@@ -37,11 +38,15 @@ class DaggerService(private val component: Any) : ServicesFactory() {
             services.bind(SERVICE_NAME, keyComponent)
             cachedServices.put(key, keyComponent)
         }
+
+        Log.e("EDGE", "bindServices: " + key.javaClass.simpleName);
     }
 
-    override fun tearDownServices(services: Services?) {
+    override fun tearDownServices(services: Services) {
         super.tearDownServices(services)
-        cachedServices.remove(services?.getKey<Any>())
+        cachedServices.remove(services.getKey<Any>())
+
+        Log.e("EDGE", "tearDownServices: " + services.getKey<Any>().javaClass.simpleName);
     }
 
     fun <T> createComponent(componentClass: Class<T>, vararg dependencies: Any): T {

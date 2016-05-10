@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +18,9 @@ import flow.TraversalCallback
 import kotlin.reflect.declaredMemberFunctions
 import kotlin.reflect.jvm.javaMethod
 
-internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger() {
-    override fun changeKey(outgoingState: State?, incomingState: State?, direction: Direction?,
-                           incomingContexts: MutableMap<Any, Context>?, callback: TraversalCallback?) {
+internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger {
+    override fun changeKey(outgoingState: State?, incomingState: State, direction: Direction,
+                           incomingContexts: MutableMap<Any, Context>, callback: TraversalCallback) {
         val inKey = incomingState?.getKey<Any>()!!
         val outKey = outgoingState?.getKey<Any>()
         val content = activity.findViewById(android.R.id.content) as ViewGroup
@@ -64,10 +65,12 @@ internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger()
                 override fun onViewAttachedToWindow(view: View) {
                     setupDataBinding(view, viewModel)
                     presenter.attach(view)
+                    Log.e("EDGE", "attach: " + key.javaClass.simpleName);
                 }
 
                 override fun onViewDetachedFromWindow(view: View) {
                     presenter.detach(view);
+                    Log.e("EDGE", "detach: " + key.javaClass.simpleName);
                 }
             })
         } else {
