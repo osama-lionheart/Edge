@@ -1,5 +1,6 @@
 package com.example.edge.slideshow
 
+import android.util.Log
 import android.view.View
 import com.example.edge.common.HandlesBack
 import com.example.edge.common.ScopeSingleton
@@ -14,10 +15,10 @@ class SlideshowPresenter @Inject constructor() : ViewPresenter<View>(), HandlesB
     }
 
     public override fun onEnterScope(scope: MortarScope) {
-        super.onEnterScope(scope)
+        Log.e("EDGE", "onEnterScope " + javaClass.simpleName);
     }
 
     public override fun onExitScope() {
-        super.onExitScope()
+        Log.e("EDGE", "onExitScope " + javaClass.simpleName);
     }
 }
