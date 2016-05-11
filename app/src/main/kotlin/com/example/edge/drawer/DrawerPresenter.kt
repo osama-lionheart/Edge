@@ -5,11 +5,13 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import com.example.edge.R
 import com.example.edge.common.*
+import com.example.edge.common.DaggerService.Companion.getComponent
 import com.example.edge.gallery.GalleryScreen
 import com.example.edge.slideshow.SlideshowScreen
 import flow.Direction
@@ -22,6 +24,10 @@ class DrawerPresenter @Inject constructor(
         private val activityOwner: ActivityOwner) : Presenter<View>, HandlesBack {
     private var view: DrawerLayout? = null
     private var drawerToggle: ActionBarDrawerToggle? = null
+
+    override fun onEnter() {
+        Log.e("EDGE", "DrawerPresenter.onEnter")
+    }
 
     override fun attach(view: View) {
         this.view = view as DrawerLayout
@@ -44,6 +50,10 @@ class DrawerPresenter @Inject constructor(
     override fun detach(view: View) {
         this.view = null
         activityOwner.onOptionsItemsSelectedListener = null
+    }
+
+    override fun onExit() {
+        Log.e("EDGE", "DrawerPresenter.onExit")
     }
 
     val onNavigationItemSelected: (MenuItem) -> Boolean = {
@@ -84,7 +94,8 @@ class DrawerPresenter @Inject constructor(
         } else {
             val content = (view?.findViewById(R.id.containerView) as FrameLayout).getChildAt(0)
             val key = Flow.getKey<Any>(content)
-            val presenter = (key as? HasPresenter<*>)?.getPresenter(content?.context!!)
+            val component = content?.context!!.getComponent(Any::class)!!
+            val presenter = (key as? HasPresenter<*>)?.getPresenter(component)
             return (presenter as? HandlesBack)?.onBackPressed() ?: false
         }
     }
