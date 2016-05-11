@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import com.example.edge.gallery.GalleryScreen
 import flow.Flow
 import flow.KeyDispatcher
+import mortar.MortarScope
+import mortar.bundler.BundleServiceRunner
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         val baseContext = Flow.configure(newBase, this)
                 .addServicesFactory(DaggerService(component))
+                .addServicesFactory(MortarService(MortarScope.getScope(newBase!!.applicationContext)))
                 .dispatcher(KeyDispatcher.configure(this, ActivityKeyChanger(this)).build())
                 .defaultKey(GalleryScreen())
                 .keyParceler(BasicKeyParceler())
@@ -42,15 +45,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //BundleServiceRunner.getBundleServiceRunner(this).onCreate(savedInstanceState)
+
         component.inject(this)
 
-        activityOwner.attach(this)
+        activityOwner.takeView(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        activityOwner.detach(this)
+        activityOwner.dropView(this)
+
+        /*if (isFinishing) {
+            val activityScope = MortarScope.findChild(applicationContext, getScopeName())
+            activityScope?.destroy()
+        }*/
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -71,5 +81,38 @@ class MainActivity : AppCompatActivity() {
         if (!backHandled && !Flow.get(this).goBack()) {
             super.onBackPressed()
         }
+    }
+
+    override fun getSystemService(name: String): Any {
+        var activityScope = getScope(applicationContext)
+
+        if (MortarScope.getScope(applicationContext).hasService(name)) {
+            return MortarScope.getScope(applicationContext).getService<Any>(name)
+        }
+
+        return super.getSystemService(name)
+    }
+
+    private fun getScope(context: Context): MortarScope {
+        val parent = MortarScope.getScope(context)
+        var child: MortarScope? = MortarScope.findChild(context, getScopeName())
+
+        if (child == null) {
+            child = parent.buildChild()
+                    .withService(BundleServiceRunner.SERVICE_NAME, BundleServiceRunner())
+                    .withService(DaggerService.SERVICE_NAME, component)
+                    .build(getScopeName())
+        }
+
+        return child as MortarScope
+    }
+
+    private fun getScopeName(): String {
+        return javaClass.simpleName;
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        //BundleServiceRunner.getBundleServiceRunner(this).onSaveInstanceState(outState)
     }
 }
