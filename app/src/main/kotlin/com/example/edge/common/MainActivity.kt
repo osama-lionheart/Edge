@@ -10,6 +10,7 @@ import com.example.edge.gallery.GalleryScreen
 import flow.Flow
 import flow.KeyDispatcher
 import javax.inject.Inject
+import com.example.edge.common.DaggerService.Companion.getComponent
 
 class MainActivity : AppCompatActivity() {
     @Inject lateinit var activityOwner: ActivityOwner
@@ -65,7 +66,8 @@ class MainActivity : AppCompatActivity() {
         val view = findViewById(R.id.content) as ViewGroup
         val content = view.getChildAt(0)
         val key = Flow.getKey<Any>(content)
-        val presenter = (key as? HasPresenter<*>)?.getPresenter(content.context)
+        val component = content?.context!!.getComponent(Any::class)!!
+        val presenter = (key as? HasPresenter<*>)?.getPresenter(component)
         val backHandled = (presenter as? HandlesBack)?.onBackPressed() ?: false
 
         if (!backHandled && !Flow.get(this).goBack()) {

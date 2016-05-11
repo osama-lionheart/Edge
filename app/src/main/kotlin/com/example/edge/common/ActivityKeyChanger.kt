@@ -59,18 +59,18 @@ internal class ActivityKeyChanger(private val activity: Activity) : KeyChanger {
         val viewModel = getViewModelFromKey(key, context)
 
         if (key is HasPresenter<*>) {
-            val presenter = key.getPresenter(context)
+            val presenter = key.getPresenter(context.getComponent(Any::class)!!)
 
             view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
                 override fun onViewAttachedToWindow(view: View) {
                     setupDataBinding(view, viewModel)
                     presenter.attach(view)
-                    Log.e("EDGE", "attach: " + key.javaClass.simpleName);
+                    Log.e("EDGE", "${presenter.javaClass.simpleName}.attach")
                 }
 
                 override fun onViewDetachedFromWindow(view: View) {
                     presenter.detach(view);
-                    Log.e("EDGE", "detach: " + key.javaClass.simpleName);
+                    Log.e("EDGE", "${presenter.javaClass.simpleName}.detach")
                 }
             })
         } else {

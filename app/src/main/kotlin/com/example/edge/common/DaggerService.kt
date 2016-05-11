@@ -28,6 +28,8 @@ class DaggerService(private val component: Any) : ServicesFactory() {
         val key = services.getKey<Any>()!!
         val componentClass = key.javaClass.getAnnotation(WithComponent::class.java)?.value
 
+        Log.e("EDGE", "bindServices for ${key.javaClass.simpleName}")
+
         if (componentClass != null) {
             val parentComponent = when (key) {
                 is HasContainerKey -> cachedServices[key.containerKey]!!
@@ -37,16 +39,27 @@ class DaggerService(private val component: Any) : ServicesFactory() {
             val keyComponent = createComponent(componentClass.java, parentComponent)
             services.bind(SERVICE_NAME, keyComponent)
             cachedServices.put(key, keyComponent)
-        }
 
-        Log.e("EDGE", "bindServices: " + key.javaClass.simpleName);
+            if (key is HasPresenter<*>) {
+                val presenter = key.getPresenter(keyComponent);
+                presenter.onEnter();
+            }
+        }
     }
 
     override fun tearDownServices(services: Services) {
         super.tearDownServices(services)
-        cachedServices.remove(services.getKey<Any>())
+        val key = services?.getKey<Any>()!!
+        val keyComponent = services?.getService<Any>(SERVICE_NAME)!!
 
-        Log.e("EDGE", "tearDownServices: " + services.getKey<Any>().javaClass.simpleName);
+        Log.e("EDGE", "tearDownServices for ${key.javaClass.simpleName}")
+
+        if (key is HasPresenter<*>) {
+            val presenter = key.getPresenter(keyComponent);
+            presenter.onExit();
+        }
+
+        cachedServices.remove(key)
     }
 
     fun <T> createComponent(componentClass: Class<T>, vararg dependencies: Any): T {
